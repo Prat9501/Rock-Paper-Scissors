@@ -5,9 +5,9 @@ import Scissors from './icons/Scissors';
 import './App.css';
 
 const choices = [
-  { id: 1, name: 'rock', component: Rock },
-  { id: 2, name: 'paper', component: Paper },
-  { id: 3, name: 'scissor', component: Scissors}
+  { id: 1, name: 'rock', component: Rock, losesTo: 2 },
+  { id: 2, name: 'paper', component: Paper, losesTo: 3 },
+  { id: 3, name: 'scissor', component: Scissors, losesTo: 1}
 ];
 
 export default function App() {
@@ -18,14 +18,36 @@ export default function App() {
   const [gameState, setGameState] = useState(null);
 
   useEffect(() => {
+    restartGame();
+  }, []);
+
+  function restartGame(){
+    setGameState(null);
+    setUserChoice(null);
     const randomChoice = choices[Math.floor(Math.random() * choices.length)];
+    console.log(randomChoice);
     setComputerChoice(randomChoice);
-  }, [])
+  };
 
   function handleUserChoice(choice){
     const choose = choices.find(c => c.id === choice);
     setUserChoice(choose);
-  }
+
+    if (choose.losesTo === computerChoice.id){
+      setLosses(losses => losses + 1);
+      setGameState('lose');
+    } else if (computerChoice.losesTo === choose.id) {
+      setWins(wins => wins + 1);
+      setGameState('win');
+    } else if (computerChoice.id === choose.id) {
+      setGameState('draw');
+    }
+  };
+
+  function renderComponents(choice){
+    const Component = choice.component;
+    return <Component />
+  };
 
   return (
     <div className="app">
@@ -48,7 +70,18 @@ export default function App() {
       </div>
 
       {/* the popup to show win/loss/draw */}
-      {/* <div className="game-state"></div> */}
+      {gameState && (
+        <div className={`game-state ${gameState}`}>
+          <div>
+            <div className='game-state-content'>
+              <p>{renderComponents(userChoice)}</p>
+              <p>You {gameState}!</p>
+              <p>{renderComponents(computerChoice)}</p>
+            </div>
+            <button onClick={() => restartGame()}>Play Again</button>
+          </div>
+        </div>
+      )}
 
       <div className="choices">
         {/* choices captions */}
