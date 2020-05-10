@@ -25,7 +25,6 @@ export default function App() {
     setGameState(null);
     setUserChoice(null);
     const randomChoice = choices[Math.floor(Math.random() * choices.length)];
-    console.log(randomChoice);
     setComputerChoice(randomChoice);
   };
 
